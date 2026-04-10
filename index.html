@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixie - The Pixel Editor</title>
+     <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="ribbon">
+        <div class="menu-item">File
+            <div class="dropdown">
+                <div class="dropdown-item" id="menu-new"><span>New Project</span></div>
+                <div class="dropdown-item" id="menu-save-proj"><span>Save Project</span> <span class="shortcut">.json</span></div>
+                <div class="dropdown-item" id="menu-load-proj"><span>Load Project</span></div>
+                <input type="file" id="load-file" style="display:none" accept=".json">
+            </div>
+        </div>
+        <div class="menu-item">Export
+            <div class="dropdown">
+                <div class="dropdown-item" id="menu-export-png"><span>Export Frame</span> <span class="shortcut">PNG</span></div>
+                <div class="dropdown-item" id="menu-export-sheet"><span>Export Sprite Sheet</span> <span class="shortcut">PNG</span></div>
+            </div>
+        </div>
+        <div class="menu-item">Edit
+            <div class="dropdown">
+                <div class="dropdown-item" id="menu-undo"><span>Undo</span> <span class="shortcut">Ctrl+Z</span></div>
+                <div class="dropdown-item" id="menu-redo"><span>Redo</span> <span class="shortcut">Ctrl+Y</span></div>
+                <div class="dropdown-item" id="menu-flip-h"><span>Flip Horizontal</span></div>
+                <div class="dropdown-item" id="menu-flip-v"><span>Flip Vertical</span></div>
+            </div>
+        </div>
+        <div class="menu-item">Window
+            <div class="dropdown" id="window-dropdown">
+                <div class="dropdown-item" data-panel="panel-tools"><span>Tools</span></div>
+                <div class="dropdown-item" data-panel="panel-color"><span>Color Palette</span></div>
+                <div class="dropdown-item" data-panel="panel-layers"><span>Layers</span></div>
+                <div class="dropdown-item" data-panel="panel-frames"><span>Animation</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layout-core">
+        <div class="viewport-center" id="viewport">
+            <div class="canvas-wrapper" id="canvas-wrapper">
+                <canvas id="onionCanvas"></canvas>
+                <canvas id="compositeCanvas"></canvas>
+                <canvas id="interactionCanvas"></canvas>
+                <canvas id="gridCanvas"></canvas>
+            </div>
+            
+            <div class="floating-controls">
+                <button class="float-btn" id="fl-undo" title="Undo"><svg viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C20.32 11.2 16.76 8 12.5 8z"/></svg></button>
+                <button class="float-btn" id="fl-redo" title="Redo"><svg viewBox="0 0 24 24"><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.26 0-7.82 3.2-8.97 7.72l2.37.78C5.95 13.31 8.96 11 12.5 11c1.96 0 3.73.72 5.12 1.88L14 16h9V7l-4.6 3.6z"/></svg></button>
+                <div class="float-divider"></div>
+                <button class="float-btn" id="fl-zoom-out" title="Zoom Out"><svg viewBox="0 0 24 24"><path d="M19 13H5v-2h14v2z"/></svg></button>
+                <button class="float-btn" id="fl-zoom-reset" title="100%" style="font-size: 10px; width: auto; padding: 0 4px;">100%</button>
+                <button class="float-btn" id="fl-zoom-in" title="Zoom In"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
+                <div class="float-divider"></div>
+                <button class="float-btn" id="fl-grid" title="Toggle Grid"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM8 18H4v-4h4v4zm0-6H4V8h4v4zm6 6h-4v-4h4v4zm0-6h-4V8h4v4zm6 6h-4v-4h4v4zm0-6h-4V8h4v4z"/></svg></button>
+                <button class="float-btn" id="fl-play" title="Play/Pause"><svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+            </div>
+
+            <div class="context-menu" id="ctx-menu">
+                <div class="ctx-item" id="ctx-add-frame">Add Frame</div>
+                <div class="ctx-item" id="ctx-dup-frame">Duplicate Frame</div>
+                <div class="ctx-divider"></div>
+                <div class="ctx-item" id="ctx-clear-layer">Clear Active Layer</div>
+                <div class="ctx-divider"></div>
+                <div class="ctx-item" id="ctx-toggle-grid">Toggle Grid</div>
+            </div>
+        </div>
+
+        <div class="panel" id="panel-tools" style="top: 20px; left: 20px; width: 100px;">
+            <div class="panel-header" id="header-tools"><span>Tools</span><span class="panel-close" onclick="closePanel('panel-tools')">&times;</span></div>
+            <div class="panel-body">
+                <div class="tools-grid">
+                    <button class="tool-btn" data-tool="select" title="Select (S)"><svg viewBox="0 0 24 24"><path d="M3 3h4v2H5v2H3V3zm8 0h2v2h-2V3zm6 0h4v4h-2V5h-2V3zM3 11h2v2H3v-2zm16 0h2v2h-2v-2zM3 19v-4h2v2h2v2H3zm12 2h-2v-2h2v2zm6 0h-4v-2h2v-2h2v4z" fill="currentColor"/></svg></button>
+                    <button class="tool-btn active" data-tool="pencil" title="Pencil (P)"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
+                    <button class="tool-btn" data-tool="eraser" title="Eraser (E)"><svg viewBox="0 0 24 24"><path d="M15.14 3c-.51 0-1.02.2-1.41.59L2.59 14.73c-.78.77-.78 2.04 0 2.83L5 20h16v-2h-9.59l8.74-8.74c.78-.78.78-2.05 0-2.83l-3.6-3.6C16.16 3.2 15.65 3 15.14 3zm-2.83 8.49l2.83-2.83 2.83 2.83-2.83 2.83-2.83-2.83z"/></svg></button>
+                    <button class="tool-btn" data-tool="fill" title="Fill (F)"><svg viewBox="0 0 24 24"><path d="M19 4H5v12h14V4zM5 18h14v2H5zM12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/></svg></button>
+                    <button class="tool-btn" data-tool="picker" title="Picker (I)"><svg viewBox="0 0 24 24"><path d="M20.71 5.63l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-3.12 3.12-1.93-1.91-1.41 1.41 1.42 1.42L3 16.25V21h4.75l8.92-8.92 1.42 1.42 1.41-1.41-1.92-1.92 3.12-3.12c.4-.4.4-1.03.01-1.42zM6.92 19L5 17.08l8.06-8.06 1.92 1.92L6.92 19z"/></svg></button>
+                    <button class="tool-btn" data-tool="line" title="Line (L)"><svg viewBox="0 0 24 24"><path d="M3 21L21 3M5 21l16-16" stroke="currentColor" stroke-width="2"/></svg></button>
+                    <button class="tool-btn" data-tool="rect" title="Rect (R)"><svg viewBox="0 0 24 24"><path d="M3 3h18v18H3z" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
+                    <button class="tool-btn" data-tool="rect-fill" title="Filled Rect"><svg viewBox="0 0 24 24"><path d="M3 3h18v18H3z" fill="currentColor"/></svg></button>
+                    <button class="tool-btn" data-tool="circle" title="Circle (C)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
+                    <button class="tool-btn" data-tool="circle-fill" title="Filled Circle"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="currentColor"/></svg></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel" id="panel-color" style="top: 20px; right: 20px; width: 220px;">
+            <div class="panel-header" id="header-color"><span>Color</span><span class="panel-close" onclick="closePanel('panel-color')">&times;</span></div>
+            <div class="panel-body">
+                <div class="color-module">
+                    <input type="color" id="primary-color" class="color-picker" value="#ff0000">
+                    <input type="text" id="hex-input" class="hex-input" value="#FF0000" maxlength="7">
+                </div>
+                <div class="palette" id="palette"></div>
+            </div>
+        </div>
+
+        <div class="panel" id="panel-layers" style="top: 180px; right: 20px; width: 220px;">
+            <div class="panel-header" id="header-layers"><span>Layers</span><span class="panel-close" onclick="closePanel('panel-layers')">&times;</span></div>
+            <div class="panel-body">
+                <div class="layers-list" id="layers-list"></div>
+                <div id="layer-controls" style="display: none; flex-direction: column; gap: 4px; margin-top: 4px;">
+                    <div style="display: flex; align-items: center; gap: 4px; font-size: 10px;">
+                        <span>Opacity</span>
+                        <input type="range" id="layer-opacity" min="0" max="1" step="0.01" value="1" style="flex:1;">
+                        <span id="opacity-val">100%</span>
+                    </div>
+                </div>
+                <div class="controls-row">
+                    <button id="btn-add-layer" class="flex-1">+</button>
+                    <button id="btn-del-layer" class="flex-1">-</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel" id="panel-frames" style="bottom: 80px; left: 50%; transform: translateX(-50%); width: 350px;">
+            <div class="panel-header" id="header-frames"><span>Animation</span><span class="panel-close" onclick="closePanel('panel-frames')">&times;</span></div>
+            <div class="panel-body">
+                <div class="frames-list" id="frames-list"></div>
+                <div class="controls-row">
+                    <button id="btn-add-frame" class="flex-1">Add</button>
+                    <button id="btn-dup-frame" class="flex-1">Dup</button>
+                    <button id="btn-del-frame" class="flex-1">Del</button>
+                </div>
+                <div class="controls-row">
+                    <span style="font-size: 10px;">FPS:</span>
+                    <input type="number" id="fps-input" value="12" min="1" max="60">
+                    <label style="display:flex; align-items:center; gap:4px; margin-left: auto;">
+                        <input type="checkbox" id="onion-skin" checked> Onion
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel" id="panel-project" style="top: 360px; right: 20px; width: 220px; display: none;">
+            <div class="panel-header" id="header-project"><span>Project Info</span><span class="panel-close" onclick="closePanel('panel-project')">&times;</span></div>
+            <div class="panel-body">
+                <label>Matrix Setup</label>
+                <select id="matrix-size" style="width: 100%;">
+                    <option value="16">16 x 16</option>
+                    <option value="32" selected>32 x 32</option>
+                    <option value="64">64 x 64</option>
+                </select>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="status-bar">
+        <span id="status-coords">X: 0, Y: 0</span>
+        <span id="status-info">Version - 0.1</span>
+        <span id="status-repo">
+        <a href="https://github.com/vassaled/pixie" target="_blank">
+            GitHub Repo
+        </a>
+    </span>
+    </div>
+
+    
+<script src="js/app.js" defer></script>
+</body>
+</html>

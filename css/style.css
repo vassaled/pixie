@@ -1,0 +1,80 @@
+ * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; flex-direction: column; height: 100vh; background-color: #181818; color: #cccccc; overflow: hidden; }
+        
+        /* Ribbon */
+        .ribbon { background-color: #202020; display: flex; padding: 6px 16px; border-bottom: 1px solid #111; user-select: none; gap: 20px; font-size: 12px; z-index: 10000; position: relative; }
+        .menu-item { cursor: pointer; position: relative; padding: 4px 8px; border-radius: 3px; }
+        .menu-item:hover { background-color: #333; color: #fff; }
+        .dropdown { display: none; position: absolute; top: 100%; left: 0; background-color: #252526; border: 1px solid #333; min-width: 180px; z-index: 10000; box-shadow: 0 4px 12px rgba(0,0,0,0.5); border-radius: 4px; padding: 4px 0; }
+        .menu-item:hover .dropdown { display: block; }
+        .dropdown-item { padding: 8px 16px; display: flex; justify-content: space-between; align-items: center; }
+        .dropdown-item:hover { background-color: #094771; color: #fff; }
+        .shortcut { color: #888; font-size: 10px; }
+        .dropdown-item:hover .shortcut { color: #ccc; }
+
+        /* Workspace Core */
+        .layout-core { display: flex; flex: 1; position: relative; overflow: hidden; background-color: #1e1e1e; }
+        
+        /* Canvas Viewport */
+        .viewport-center { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; overflow: hidden; z-index: 10; }
+        .canvas-wrapper { position: relative; background-image: linear-gradient(45deg, #444 25%, transparent 25%), linear-gradient(-45deg, #444 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #444 75%), linear-gradient(-45deg, transparent 75%, #444 75%); background-size: 16px 16px; background-position: 0 0, 0 8px, 8px -8px, -8px 0px; background-color: #333; box-shadow: 0 8px 32px rgba(0,0,0,0.6); transform-origin: center; transition: transform 0.1s cubic-bezier(0.2, 0, 0, 1); }
+        canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; image-rendering: pixelated; pointer-events: none; }
+        #interactionCanvas { pointer-events: auto; cursor: crosshair; z-index: 10; }
+        #gridCanvas { z-index: 20; opacity: 0.3; display: none; }
+        #onionCanvas { opacity: 0.35; z-index: 5; }
+
+        /* Floating Window Panels */
+        .panel { position: absolute; background-color: #252526; border: 1px solid #444; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); display: flex; flex-direction: column; overflow: hidden; z-index: 100; min-width: 150px; }
+        .panel-header { background-color: #333; padding: 6px 10px; font-size: 11px; font-weight: bold; cursor: move; user-select: none; display: flex; justify-content: space-between; align-items: center; letter-spacing: 0.5px; color: #ccc; }
+        .panel-close { cursor: pointer; color: #888; font-weight: bold; font-size: 14px; line-height: 1; }
+        .panel-close:hover { color: #f48771; }
+        .panel-body { padding: 10px; display: flex; flex-direction: column; gap: 10px; max-height: 400px; overflow-y: auto; }
+
+        /* Tools Grid specific */
+        .tools-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; }
+        .tool-btn { width: 32px; height: 32px; background-color: transparent; color: #999; border: 1px solid transparent; border-radius: 4px; cursor: pointer; display:flex; justify-content:center; align-items:center; transition: all 0.1s; }
+        .tool-btn svg { width: 18px; height: 18px; fill: currentColor; pointer-events: none; }
+        .tool-btn:hover { background-color: #333; color: #ddd; }
+        .tool-btn.active { background-color: #094771; border-color: #007fd4; color: #fff; }
+
+        /* General UI Elements */
+        label { font-size: 10px; text-transform: uppercase; color: #9cdcfe; font-weight: bold; }
+        .color-module { display: flex; gap: 6px; align-items: center; }
+        .color-picker { width: 36px; height: 28px; border: 1px solid #454545; background: none; cursor: pointer; padding: 0; border-radius: 4px;}
+        .hex-input { flex: 1; background-color: #1e1e1e; color: #d4d4d4; border: 1px solid #333; padding: 6px; font-size: 11px; font-family: monospace; border-radius: 4px; outline: none;}
+        .palette { display: grid; grid-template-columns: repeat(8, 1fr); gap: 3px; margin-top: 4px; }
+        .swatch { width: 100%; aspect-ratio: 1; border: 1px solid rgba(0,0,0,0.3); cursor: pointer; border-radius: 2px;}
+        .swatch:hover { border-color: #fff; transform: scale(1.1); z-index: 10;}
+        select, button, input[type="number"], input[type="range"] { background-color: #333; color: #ccc; border: 1px solid #444; padding: 6px; font-size: 11px; cursor: pointer; border-radius: 4px; outline: none;}
+        button:hover { background-color: #444; color: #fff;}
+        button:active { background-color: #094771; border-color: #007fd4; }
+        input[type="number"] { width: 45px; text-align: center; }
+        
+        /* Lists */
+        .layers-list, .frames-list { display: flex; flex-direction: column; gap: 2px; max-height: 120px; overflow-y: auto; background-color: #1e1e1e; border: 1px solid #333; padding: 2px; border-radius: 4px;}
+        .frames-list { flex-direction: row; overflow-x: auto; overflow-y: hidden; min-height: 44px; }
+        .list-item { padding: 4px 8px; background-color: transparent; cursor: pointer; font-size: 11px; display: flex; align-items: center; gap: 8px; border-radius: 3px; color: #aaa;}
+        .frames-list .list-item { justify-content: center; background-color: #2d2d2d; min-width: 36px;}
+        .list-item:hover { background-color: #333; color: #fff;}
+        .list-item.active { background-color: #094771; color: #fff; font-weight: bold;}
+        .layer-vis { cursor: pointer; font-size: 14px; user-select: none; }
+        .layer-vis.hidden { opacity: 0.3; }
+        .layer-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .controls-row { display: flex; gap: 4px; align-items: center; }
+        .flex-1 { flex: 1; }
+
+        /* Viewport Controls */
+        .floating-controls { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background-color: rgba(30, 30, 30, 0.85); backdrop-filter: blur(4px); border: 1px solid #333; border-radius: 8px; padding: 6px; display: flex; gap: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 500;}
+        .float-btn { background: none; border: none; color: #ccc; cursor: pointer; width: 28px; height: 28px; border-radius: 4px; display: flex; justify-content: center; align-items: center;}
+        .float-btn svg { width: 16px; height: 16px; fill: currentColor;}
+        .float-btn:hover { background-color: rgba(255,255,255,0.1); color: #fff;}
+        .float-divider { width: 1px; background-color: #444; margin: 0 4px; }
+
+        /* Context Menu */
+        .context-menu { display: none; position: fixed; background-color: #252526; border: 1px solid #333; box-shadow: 0 4px 12px rgba(0,0,0,0.5); border-radius: 4px; flex-direction: column; z-index: 2000; padding: 4px 0; min-width: 160px;}
+        .ctx-item { padding: 6px 12px; font-size: 11px; cursor: pointer; color: #ccc; display: flex; align-items: center; gap: 8px;}
+        .ctx-item:hover { background-color: #094771; color: #fff; }
+        .ctx-divider { height: 1px; background-color: #333; margin: 4px 0; }
+
+        .status-bar { background-color: #007fd4; color: #fff; height: 20px; display: flex; align-items: center; padding: 0 12px; font-size: 10px; justify-content: space-between; z-index: 10000; }
+        .status-bar a, .status-bar a:visited { color: #fff; }

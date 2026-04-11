@@ -13,10 +13,18 @@
             header.addEventListener('mousedown', (e) => {
                 if(e.target.classList.contains('panel-close')) return;
                 isDragging = true;
-                startX = e.clientX; startY = e.clientY;
-                startLeft = parseInt(window.getComputedStyle(panel).left, 10) || 0;
-                startTop = parseInt(window.getComputedStyle(panel).top, 10) || 0;
-                panel.style.transform = 'none'; // Clear translate if centered
+                startX = e.clientX; 
+                startY = e.clientY;
+                
+                const rect = panel.getBoundingClientRect();
+                startLeft = rect.left;
+                startTop = rect.top;
+                
+                panel.style.left = startLeft + 'px';
+                panel.style.top = startTop + 'px';
+                panel.style.right = 'auto';
+                panel.style.bottom = 'auto';
+                panel.style.transform = 'none'; 
             });
 
             document.addEventListener('mousemove', (e) => {

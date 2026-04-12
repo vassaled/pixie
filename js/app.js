@@ -36,7 +36,7 @@
             document.addEventListener('mouseup', () => { isDragging = false; });
         }
 
-        ['panel-tools', 'panel-color', 'panel-layers', 'panel-frames', 'panel-project'].forEach(id => {
+        ['panel-tools', 'panel-color', 'panel-layers', 'panel-frames'].forEach(id => {
             makeDraggable(id, id.replace('panel-', 'header-'));
         });
 

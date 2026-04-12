@@ -1,4 +1,4 @@
-# Pixie (v0.1.1)
+# Pixie (v0.1.2)
 
 Pixie is a browser-based pixel art and sprite editor.
 
@@ -41,5 +41,6 @@ Pixie is under active development.
 
 ## Minor fix
 
-### v0.1.1
-- Fixed a UI bug where the animation panel would elongate while being dragged
+### v0.1.2
+- Fixed a UI bug where the animation panel would start at center of canvas initially
+- FIxed a UI bug which caused the project setup panel invisible
